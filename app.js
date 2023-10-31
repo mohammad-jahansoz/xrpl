@@ -1,12 +1,11 @@
 const xrpl = require("xrpl");
 
-const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233/");
+const client = new xrpl.Client("wss://xahau-test.net");
 
 const createWallet = async () => {
   await client.connect();
   const wallet = xrpl.Wallet.generate();
   console.log(wallet);
-
   const response = await client.request({
     command: "account_info",
     account: "rXieaAC3nevTKgVu2SYoShjTCS2Tfczqx",
@@ -14,6 +13,13 @@ const createWallet = async () => {
   });
   console.log(response);
 
+  await client.disconnect();
+};
+
+const getBalance = async (address) => {
+  await client.connect();
+  const balance = await client.getBalances(address);
+  console.log(balance);
   await client.disconnect();
 };
 
@@ -41,9 +47,10 @@ const sendXrp = async (secret, destinationAddress, amount) => {
   await client.disconnect();
 };
 
-sendXrp(
-  "sEdS2943KzpEua3hfkmUh7kNPrmVWSq",
-  "rD8bHVhMb3oEPSp4dwy1UQ9Ch2By5Gp8P3",
-  22222
-);
+// sendXrp(
+//   "snqt5zDTrhb7z1KxAmPB9Pnjja535",
+//   "rJyx9wZCkRopX4WX4ZMmrN5KDkU4FeEgKu",
+//   44
+// );
+getBalance("rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
 // createWallet();
