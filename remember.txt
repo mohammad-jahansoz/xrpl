@@ -8,6 +8,8 @@ Secret: sEdS2943KzpEua3hfkmUh7kNPrmVWSq
 Address: rD8bHVhMb3oEPSp4dwy1UQ9Ch2By5Gp8P3
 Secret: sEd7v67E5nc8ppK52pF9TENDsj7SraU
 
+*********************************
+testnet acc
 
 
 address : rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2

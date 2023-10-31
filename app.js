@@ -26,11 +26,13 @@ const getBalance = async (address) => {
 const sendXrp = async (secret, destinationAddress, amount) => {
   await client.connect();
   const wallet = xrpl.Wallet.fromSecret(secret);
+  const balance = await client.getBalances(wallet.address);
+  console.log(balance);
   console.log(wallet);
   const prepared = await client.autofill({
     TransactionType: "Payment",
     Account: wallet.address,
-    Amount: xrpl.xrpToDrops(amount),
+    Amount: xrpl.xrpToDrops(5),
     Destination: destinationAddress,
   });
   const max_ledger = prepared.LastLedgerSequence;
@@ -44,13 +46,14 @@ const sendXrp = async (secret, destinationAddress, amount) => {
 
   const tx = await client.submitAndWait(signed.tx_blob);
   console.log(tx);
+  console.log("Transaction result:", tx.result.meta.TransactionResult);
+  console.log(
+    "Balance changes:",
+    JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2)
+  );
   await client.disconnect();
 };
 
-// sendXrp(
-//   "snqt5zDTrhb7z1KxAmPB9Pnjja535",
-//   "rJyx9wZCkRopX4WX4ZMmrN5KDkU4FeEgKu",
-//   44
-// );
-getBalance("rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
+sendXrp("snqt5zDTrhb7z1KxAmPB9Pnjja535", "rJyx9wZCkRopX4WX4ZMmrN5KDkU4FeEgKu");
+// getBalance("rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
 // createWallet();
