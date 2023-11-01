@@ -24,6 +24,7 @@ const getBalance = async (address) => {
 };
 
 const sendXrp = async (secret, destinationAddress, amount) => {
+  const fee = 0.1;
   await client.connect();
   const wallet = xrpl.Wallet.fromSecret(secret);
   const balance = await client.getBalances(wallet.address);
@@ -34,6 +35,7 @@ const sendXrp = async (secret, destinationAddress, amount) => {
     Account: wallet.address,
     Amount: xrpl.xrpToDrops(5),
     Destination: destinationAddress,
+    Fee: xrpl.xrpToDrops(fee),
   });
   const max_ledger = prepared.LastLedgerSequence;
   console.log("Prepared transaction instructions:", prepared);
