@@ -1,9 +1,23 @@
 const xrpl = require("xrpl");
+const client = new xrpl.Client("wss://xahau-tes.net");
+const sleep = require("util").promisify(setTimeout);
 
-const client = new xrpl.Client("wss://xahau-test.net");
+let test = 0;
+
+const stablishConnection = async function () {
+  try {
+    while (!client.isConnected()) {
+      test += 1;
+      console.log(test, "  talash");
+      await client.connect();
+    }
+  } catch (err) {
+    await sleep(3000);
+    await stablishConnection();
+  }
+};
 
 const createWallet = async () => {
-  await client.connect();
   const wallet = xrpl.Wallet.generate();
   console.log(wallet);
   const response = await client.request({
@@ -12,19 +26,15 @@ const createWallet = async () => {
     ledger_index: "validated",
   });
   console.log(response);
-  await client.disconnect();
 };
 
 const getBalance = async (address) => {
-  await client.connect();
+  await stablishConnection();
   const balance = await client.getBalances(address);
   console.log(balance);
-  await client.disconnect();
 };
 
 const sendXrp = async (secret, destinationAddress, amount) => {
-  await client.connect();
-
   const fee = 0.1;
   const minimumBalance = 1;
   const wallet = xrpl.Wallet.fromSecret(secret);
@@ -74,19 +84,19 @@ const sendXrp = async (secret, destinationAddress, amount) => {
   console.log(tx);
   console.log(`transaction result ${tx.result.meta.TransactionResult}`);
   console.log(`Transaction amount deliver ${tx.result.meta.delivered_amount}`);
-
-  await client.disconnect();
 };
 
-const testClient = async function () {
-  await client.connect();
-  console.log(client.isConnected());
-  await client.disconnect();
-};
+// console.log(client.isConnected(), 3);
+
+// const testClient = async function () {
+//   await client.connect();
+//   console.log(client.isConnected());
+//   await client.disconnect();
+// };
 
 // testClient();
 
 // sendXrp("snZBfy5ovwe48fgZAzePihkSjVEFF", "rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
 
-// getBalance("rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
+getBalance("rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
 // createWallet();
