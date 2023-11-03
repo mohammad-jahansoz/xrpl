@@ -1,19 +1,28 @@
 const xrpl = require("xrpl");
-const client = new xrpl.Client("wss://xahau-tes.net");
-const sleep = require("util").promisify(setTimeout);
+const client = new xrpl.Client("wss://xahau-test.net", {
+  timeout: 9990000,
+  connectionTimeout: 9990000,
+});
+// const client = new xrpl.Client("wss://s.altnet.rppletest.net:51233/");
+const { setTimeout } = require("timers/promises");
 
 let test = 0;
-
 const stablishConnection = async function () {
   try {
     while (!client.isConnected()) {
       test += 1;
       console.log(test, "  talash");
       await client.connect();
+      if (client.isConnected()) {
+        return true;
+      } else {
+        return false;
+      }
     }
   } catch (err) {
-    await sleep(3000);
-    await stablishConnection();
+    // await setTimeout(5000, stablishConnection);
+    console.log(err);
+    return false;
   }
 };
 
@@ -26,12 +35,6 @@ const createWallet = async () => {
     ledger_index: "validated",
   });
   console.log(response);
-};
-
-const getBalance = async (address) => {
-  await stablishConnection();
-  const balance = await client.getBalances(address);
-  console.log(balance);
 };
 
 const sendXrp = async (secret, destinationAddress, amount) => {
@@ -86,17 +89,19 @@ const sendXrp = async (secret, destinationAddress, amount) => {
   console.log(`Transaction amount deliver ${tx.result.meta.delivered_amount}`);
 };
 
-// console.log(client.isConnected(), 3);
-
-// const testClient = async function () {
-//   await client.connect();
-//   console.log(client.isConnected());
-//   await client.disconnect();
-// };
-
-// testClient();
+const balance = async (address) => {
+  try {
+    const result = await stablishConnection();
+    if (result) {
+      const balance = await client.getBalances(address);
+      console.log(balance);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 // sendXrp("snZBfy5ovwe48fgZAzePihkSjVEFF", "rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
+balance("rEDA5KNDLMFN9xdTFLUkHmosPbGxS3UsPj");
 
-getBalance("rUn4kU7UAej8d8ddHc1PrRHwEzd3G9KFo2");
 // createWallet();
